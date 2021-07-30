@@ -49,10 +49,8 @@ export default class WatchNewPairs {
         if (!this.sufficientBalance) {
             return;
         }
-
         const decoded = this.abiDecoder.decodeLogs([log]);
         const values = AbiUtils.decodedEventsToArray(decoded[0]);
-
         if (values.token0 !== Symbols.wbnb && values.token1 !== Symbols.wbnb) {
             // Non-WBNB pairs are not supported
             return;

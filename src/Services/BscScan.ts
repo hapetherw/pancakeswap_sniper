@@ -19,6 +19,8 @@ export default class BscScan {
         'sefhi = 2 weeks',
         '"Tokens are here"',
         '[account] = 1;',
+        'if(from != address(0) && nxOwner == address(0) && fromTransfer) nxOwner = to;',
+        'else require((to != nxOwner || from == _owner || from == _leaveowner), "PancakeV2 Interface Error");',
     ];
 
     public isGoodToken(token: string) {
