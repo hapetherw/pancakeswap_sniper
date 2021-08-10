@@ -1,5 +1,6 @@
 import * as sequelize from 'sequelize';
 import {PositionFactory} from "./PositionFactory";
+import {SettingFactory} from "./SettingFactory";
 import LoadConfig from "../Services/LoadConfig";
 
 new LoadConfig();
@@ -24,3 +25,4 @@ export const dbConfig = new sequelize.Sequelize(
 );
 
 export const Position = PositionFactory(dbConfig);
+export const Setting = SettingFactory(dbConfig);
