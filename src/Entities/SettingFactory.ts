@@ -14,16 +14,24 @@ export function SettingFactory(sequelize: Sequelize): SettingStatic
             type: DataTypes.STRING,
         },
         profitPercentage: {
-            type: DataTypes.DECIMAL(128,0),
-            defaultValue: 100,
+            type: DataTypes.DECIMAL(128,2),
+            defaultValue: 100.00,
         },
         buyAmount: {
-            type: DataTypes.DECIMAL(128,0),
+            type: DataTypes.DECIMAL(128,2),
             defaultValue: 0.02,
         },
         buyStep: {
             type: DataTypes.INTEGER,
             defaultValue: 10,
+        },
+        currentStep: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
+        },
+        isLocked: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
         },
         createdAt: {
             allowNull: false,

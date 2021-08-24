@@ -1,5 +1,5 @@
 import Logger from "./Logger";
-import {Position} from "../Entities";
+import {Position, Setting} from "../Entities";
 import {Op} from "sequelize";
 import Web3Helper from "./Web3Helper";
 import Pricer from "./Pricer";
@@ -23,11 +23,21 @@ export default class ProfitLossManager {
         }, 60 * 1000);
     }
 
-    private check() {
+    private async check() {
         const date = new Date();
         date.setMinutes(date.getMinutes() - 30);
 
         let bestProfit: BigNumber = null;
+        
+        const mysetting = await Setting.findOne({
+            where: {
+                id: 1,
+            }
+        });
+        if (!mysetting) {
+            this.logger.error('Setting not found');
+            return;
+        }
 
         Position.findAll({
             where: {
@@ -81,6 +91,10 @@ export default class ProfitLossManager {
 
                 await position.update(updateFields);
 
+                mysetting.update({
+                    isLocked: mysetting.currentStep-1 <= 0 ? false : true,
+                    currentStep: mysetting.currentStep-1 <= 0 ? 0 : mysetting.currentStep-1
+                })
                 if (bnbReserveRemaining.gt(0.5)) {
                     this.autoSell.sellIfProfitable(position);
                 }

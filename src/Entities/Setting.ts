@@ -5,6 +5,8 @@ export interface SettingAttributes {
     profitPercentage: string;
     buyAmount: string;
     buyStep: number;
+    currentStep: number;
+    isLocked: boolean;
     createdAt?: Date;
     updatedAt?: Date;
 }

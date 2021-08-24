@@ -1,7 +1,7 @@
 import Logger from "./Logger";
 import BscScan from "./BscScan";
 import {Symbols} from "../Models/Symbols";
-import {Position} from "../Entities";
+import {Position, Setting} from "../Entities";
 import Web3Helper from "./Web3Helper";
 import {toWei} from "web3-utils";
 import Reserve from "../Models/Reserve";
@@ -37,7 +37,7 @@ export default class Ape {
             where: {
                 pair: this.pair,
             },
-        }).then((result) => {
+        }).then(async (result) => {
             if (result !== null) {
                 return;
             }
@@ -51,6 +51,21 @@ export default class Ape {
             }).save();
 
             this.logger.log(`Apeing into ${this.pair}`);
+
+            const mysetting = await Setting.findOne({
+                where: {
+                    id: 1,
+                }
+            });
+            if (!mysetting) {
+                this.logger.error('Setting not found');
+                return;
+            }
+
+            if ((!mysetting.isLocked && mysetting.currentStep >= mysetting.buyStep) || mysetting.isLocked) {
+                this.logger.error('Step limit!');
+                return;
+            }
 
             this.web3Helper.swapExactETHForTokens(this.getOtherSideToken(), this.defaultBuyIn)
                 .then(async (received) => {
@@ -70,6 +85,11 @@ export default class Ape {
                         gotToken: received.toFixed(),
                         tokenRemaining: received.toFixed(),
                         openedAt: new Date(),
+                    });
+
+                    await mysetting.update({
+                        currentStep: mysetting.currentStep + 1,
+                        isLocked: mysetting.currentStep + 1 >= mysetting.buyStep ? true : false
                     });
 
                     this.logger.log(`Position opened for ${this.pair}`);
